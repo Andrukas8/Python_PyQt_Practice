@@ -17,20 +17,47 @@ buttons = ["7", "8", "9", "/",
            "1", "2", "3", "-",
            "0", ".", "=", "+"]
 
-clear = QPushButton("Clear")
+clear = QPushButton("C")
 delete = QPushButton("<")
 
 row = 0
 col = 0
 
+
+def button_click():
+    button = app.sender()
+    text = button.text()
+
+    if text == "=":
+        symbol = text_box.text()
+        try:
+            res = eval(symbol)
+            text_box.setText(str(res))
+        except Exception as e:
+            text_box.setText("Error")
+
+    elif text == "C":
+        text_box.clear()
+
+    elif text == "<":
+        current_text = text_box.text()
+        text_box.setText(current_text[:-1])
+    else:
+        current_text = text_box.text()
+        text_box.setText(current_text + text)
+
+
 for text in buttons:
     button = QPushButton(text)
-    # button.clicked.connect(None)
+    button.clicked.connect(button_click)
     grid.addWidget(button, row, col)
     col += 1
     if col > 3:
         col = 0
         row += 1
+
+clear.clicked.connect(button_click)
+delete.clicked.connect(button_click)
 
 button_row = QHBoxLayout()
 button_row.addWidget(clear)
