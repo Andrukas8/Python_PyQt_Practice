@@ -1,6 +1,7 @@
 # import modules
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QListWidget, QComboBox, QHBoxLayout, QVBoxLayout
 from PyQt5.QtCore import Qt
+from PIL import Image, ImageFilter, ImageEnhance
 
 # app settings
 app = QApplication([])
