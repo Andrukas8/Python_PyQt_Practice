@@ -1,7 +1,9 @@
 # import modules
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QListWidget, QComboBox, QHBoxLayout, QVBoxLayout
+import os
+from PyQt5.QtWidgets import QApplication, QWidget, QFileDialog, QLabel, QPushButton, QListWidget, QComboBox, QHBoxLayout, QVBoxLayout
 from PyQt5.QtCore import Qt
 from PIL import Image, ImageFilter, ImageEnhance
+from PyQt5.QtGui import QPixmap
 
 # app settings
 app = QApplication([])
@@ -61,6 +63,36 @@ master_layout.addLayout(col2, 80)
 
 main_window.setLayout(master_layout)
 
+
+# Add app functionality
+
+working_directory = ""
+
+# filter files and extensions
+
+
+def filter(files, extensions):
+    results = []
+    for file in files:
+        for ext in extensions:
+            if file.endswith(ext):
+                results.append(file)
+    return results
+
+# chose current work directory
+
+
+def getWorkDirectory():
+    global working_directory
+    working_directory = QFileDialog.getExistingDirectory()
+    extensions = ['.jpg', '.jpeg', '.png', '.svg']
+    filenames = filter(os.listdir(working_directory), extensions)
+    file_list.clear()
+    for filename in filenames:
+        file_list.addItem(filename)
+
+
+btn_folder.clicked.connect(getWorkDirectory)
 
 main_window.show()
 app.exec_()
