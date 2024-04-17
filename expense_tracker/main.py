@@ -69,7 +69,7 @@ class ExpenseApp(QWidget):
             expense_id = query.value(0)
             date = query.value(1)
             category = query.value(2)
-            amount = query.valye(3)
+            amount = query.value(3)
             description = query.value(4)
 
             # add values to table
@@ -90,10 +90,8 @@ class ExpenseApp(QWidget):
         description = self.description.text()
 
         query = QSqlQuery()
-        query.prepare(""""
-                      INSERT INTO expenses (date, category, amount, description)
-                      VALUES (?, ?, ?, ?)                      
-                      """)
+        query.prepare(
+            "INSERT INTO expenses (date, category, amount, description) VALUES (?, ?, ?, ?)")
         query.addBindValue(date)
         query.addBindValue(category)
         query.addBindValue(amount)
@@ -117,7 +115,7 @@ class ExpenseApp(QWidget):
 
         expense_id = int(self.table.item(selected_row, 0).text())
         confirm = QMessageBox.question(
-            self, "Are you sure?", "Delete Expense", QMessageBox.Yes | QMessageBox.NO)
+            self, "Are you sure?", "Delete Expense", QMessageBox.Yes | QMessageBox.No)
 
         if confirm == QMessageBox.No:
             return
@@ -147,8 +145,6 @@ query.exec_("""
             )
             """)
 
-
-# Show and run your app
 
 if __name__ in "__main__":
     app = QApplication([])
