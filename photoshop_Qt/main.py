@@ -176,6 +176,40 @@ class Editor():
             working_directory, self.save_folder, self.filename)
         self.show_image(image_path)
 
+    def apply_filter(self, filter_name):
+        if filter_name == "Original":
+            self.image = self.original.copy()
+        else:
+            mapping = {
+                "B/W": lambda image: image.convert("L"),
+                "Color": lambda image: image.ImageEnhance.Color(image).enhance(1.2),
+                "Contrast": lambda image: image.ImageEnhance.Contrast(image).enhance(1.2),
+                "Blur": lambda image: image.filter(ImageFilter.BLUR),
+                "Left": lambda image: image.transpose(Image.ROTATE_90),
+                "Right": lambda image: image.transpose(Image.ROTATE_270),
+                "Mirror": lambda image: image.transpose(Image.FLIP_LEFT_RIGHT),
+                "Sharpen": lambda image: image.filter(ImageFilter.SHARPEN)
+            }
+            filter_function = mapping.get(filter_name)
+            if filter_function:
+                self.image = filter_function(self.image)
+                self.save_image()
+                image_path = os.path.join(
+                    working_directory, self.save_folder, self.filename)
+                self.show_image(image_path)
+            pass
+
+        self.save_image()
+        image_path = os.path.join(
+            working_directory, self.save_folder, self.filename)
+        self.show_image(image_path)
+
+
+def handle_filter():
+    if file_list.currentRow() >= 0:
+        select_filter = filter_box.currentText()
+        main.apply_filter(select_filter)
+
 
 def displayImage():
     if file_list.currentRow() >= 0:
@@ -188,6 +222,7 @@ main = Editor()
 
 btn_folder.clicked.connect(getWorkDirectory)
 file_list.currentRowChanged.connect(displayImage)
+filter_box.currentTextChanged.connect(handle_filter)
 
 gray.clicked.connect(main.gray)
 btn_left.clicked.connect(main.left)
