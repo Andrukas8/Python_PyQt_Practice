@@ -120,57 +120,21 @@ class Editor():
         picture_box.setPixmap(image)
         picture_box.show()
 
-    def gray(self):
-        self.image = self.image.convert("L")
-        self.save_image()
-        image_path = os.path.join(
-            working_directory, self.save_folder, self.filename)
-        self.show_image(image_path)
-
-    def left(self):
-        self.image = self.image.transpose(Image.ROTATE_90)
-        self.save_image()
-        image_path = os.path.join(
-            working_directory, self.save_folder, self.filename)
-        self.show_image(image_path)
-
-    def right(self):
-        self.image = self.image.transpose(Image.ROTATE_270)
-        self.save_image()
-        image_path = os.path.join(
-            working_directory, self.save_folder, self.filename)
-        self.show_image(image_path)
-
-    def mirror(self):
-        self.image = self.image.transpose(Image.FLIP_LEFT_RIGHT)
-        self.save_image()
-        image_path = os.path.join(
-            working_directory, self.save_folder, self.filename)
-        self.show_image(image_path)
-
-    def sharpen(self):
-        self.image = self.image.filter(ImageFilter.SHARPEN)
-        self.save_image()
-        image_path = os.path.join(
-            working_directory, self.save_folder, self.filename)
-        self.show_image(image_path)
-
-    def blur(self):
-        self.image = self.image.filter(ImageFilter.BLUR)
-        self.save_image()
-        image_path = os.path.join(
-            working_directory, self.save_folder, self.filename)
-        self.show_image(image_path)
-
-    def color(self):
-        self.image = ImageEnhance.Color(self.image).enhance(1.2)
-        self.save_image()
-        image_path = os.path.join(
-            working_directory, self.save_folder, self.filename)
-        self.show_image(image_path)
-
-    def contrast(self):
-        self.image = ImageEnhance.Contrast(self.image).enhance(1.2)
+    def transformImage(self, transformation):
+        transformations = {
+            "B/W": lambda image: image.convert("L"),
+            "Color": lambda image: ImageEnhance.Color(image).enhance(1.2),
+            "Contrast": lambda image: ImageEnhance.Contrast(image).enhance(1.2),
+            "Blur": lambda image: image.filter(ImageFilter.BLUR),
+            "Left": lambda image: image.transpose(Image.ROTATE_90),
+            "Right": lambda image: image.transpose(Image.ROTATE_270),
+            "Mirror": lambda image: image.transpose(Image.FLIP_LEFT_RIGHT),
+            "Sharpen": lambda image: image.filter(ImageFilter.SHARPEN)
+        }
+        transform_function = transformations.get(transformation)
+        if transform_function:
+            self.image = transform_function(self.image)
+            self.save_image()
         self.save_image()
         image_path = os.path.join(
             working_directory, self.save_folder, self.filename)
@@ -182,8 +146,8 @@ class Editor():
         else:
             mapping = {
                 "B/W": lambda image: image.convert("L"),
-                "Color": lambda image: image.ImageEnhance.Color(image).enhance(1.2),
-                "Contrast": lambda image: image.ImageEnhance.Contrast(image).enhance(1.2),
+                "Color": lambda image: ImageEnhance.Color(image).enhance(1.2),
+                "Contrast": lambda image: ImageEnhance.Contrast(image).enhance(1.2),
                 "Blur": lambda image: image.filter(ImageFilter.BLUR),
                 "Left": lambda image: image.transpose(Image.ROTATE_90),
                 "Right": lambda image: image.transpose(Image.ROTATE_270),
@@ -224,14 +188,14 @@ btn_folder.clicked.connect(getWorkDirectory)
 file_list.currentRowChanged.connect(displayImage)
 filter_box.currentTextChanged.connect(handle_filter)
 
-gray.clicked.connect(main.gray)
-btn_left.clicked.connect(main.left)
-btn_right.clicked.connect(main.right)
-mirror.clicked.connect(main.mirror)
-sharpness.clicked.connect(main.sharpen)
-blur.clicked.connect(main.blur)
-saturation.clicked.connect(main.color)
-contrast.clicked.connect(main.contrast)
+gray.clicked.connect(lambda: main.transformImage("B/W"))
+btn_left.clicked.connect(lambda: main.transformImage("Left"))
+btn_right.clicked.connect(lambda: main.transformImage("Right"))
+mirror.clicked.connect(lambda: main.transformImage("Mirror"))
+sharpness.clicked.connect(lambda: main.transformImage("Sharpen"))
+blur.clicked.connect(lambda: main.transformImage("Blur"))
+saturation.clicked.connect(lambda: main.transformImage("Color"))
+contrast.clicked.connect(lambda: main.transformImage("Contrast"))
 
 main_window.show()
 app.exec_()
