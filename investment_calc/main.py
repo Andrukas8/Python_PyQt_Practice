@@ -1,7 +1,8 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QTreeView, QLineEdit, QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QTreeView, QLineEdit, QMainWindow, QMessageBox, QFileDialog
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import os
 
 
 class FinanceApp(QMainWindow):
@@ -28,6 +29,7 @@ class FinanceApp(QMainWindow):
         # Buttons
         self.calc_button = QPushButton("Calculate")
         self.clear_button = QPushButton("Clear")
+        self.save_button = QPushButton("Save")
 
         # Figure
         self.figure = plt.figure()
@@ -54,6 +56,7 @@ class FinanceApp(QMainWindow):
         self.col1.addWidget(self.tree_view)
         self.col1.addWidget(self.calc_button)
         self.col1.addWidget(self.clear_button)
+        self.col1.addWidget(self.save_button)
 
         self.col2.addWidget(self.canvas)
 
@@ -71,6 +74,7 @@ class FinanceApp(QMainWindow):
 
         self.calc_button.clicked.connect(self.calc_interest)
         self.clear_button.clicked.connect(self.reset)
+        self.save_button.clicked.connect(self.save_data)
 
     def calc_interest(self):
         initial_investment = None
@@ -101,6 +105,27 @@ class FinanceApp(QMainWindow):
         ax.set_xlabel("Year")
         ax.set_ylabel("Total")
         self.canvas.draw()
+
+    def save_data(self):
+        dir_path = QFileDialog.getExistingDirectory(self, "Select Directory")
+        if dir_path:
+            folder_path = os.path.join(dir_path, "Saved")
+            os.makedirs(folder_path, exist_ok=True)
+
+            file_path = os.path.join(folder_path, "results.csv")
+            with open(file_path, "w") as file:
+                file.write("Year, Total\n")
+                for row in range(self.model.rowCount()):
+                    year = self.model.index(row, 0).data()
+                    total = self.model.index(row, 1).data()
+                    file.write("{},{}".format(year, total))
+
+            plt.savefig(folder_path + "/chart.png")
+
+            QMessageBox.information(
+                self, "Save Results", "Results were saved to your folder.")
+        else:
+            QMessageBox.warning(self, "Save Results", "No directory selected.")
 
     def reset(self):
         self.rate_input.clear()
