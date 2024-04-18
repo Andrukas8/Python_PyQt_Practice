@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QTreeView, QLineEdit, QMainWindow, QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QTreeView, QLineEdit, QMainWindow, QMessageBox, QFileDialog, QCheckBox
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -31,6 +31,8 @@ class FinanceApp(QMainWindow):
         self.clear_button = QPushButton("Clear")
         self.save_button = QPushButton("Save")
 
+        self.dark_mode = QCheckBox("Dark Mode")
+
         # Figure
         self.figure = plt.figure()
         self.canvas = FigureCanvas(self.figure)
@@ -52,6 +54,8 @@ class FinanceApp(QMainWindow):
         self.row1.addWidget(self.years_text)
         self.row1.addWidget(self.years_input)
 
+        self.row1.addWidget(self.dark_mode)
+
         # Adding items to row 2
         self.col1.addWidget(self.tree_view)
         self.col1.addWidget(self.calc_button)
@@ -72,9 +76,50 @@ class FinanceApp(QMainWindow):
 
         self.setCentralWidget(main_window)
 
+        # Events
         self.calc_button.clicked.connect(self.calc_interest)
         self.clear_button.clicked.connect(self.reset)
         self.save_button.clicked.connect(self.save_data)
+        self.dark_mode.stateChanged.connect(self.toggle_mode)
+
+        self.apply_styles()
+
+    def apply_styles(self):
+        self.setStyleSheet("""
+                           FinanceApp {
+                               background-color: #f0f0f0;
+                           }
+                           
+                           QLabel, QLineEdit, QPushButton {
+                               background-color: #f8f8f8;
+                           }
+                           
+                           QTreeView {
+                               background-color: #ffffff;
+                           }
+                           
+                           """)
+
+        if self.dark_mode.isChecked():
+            self.setStyleSheet("""
+                            FinanceApp {
+                                background-color: #222222;
+                            }
+                            
+                            QLabel, QLineEdit, QPushButton {
+                                background-color: #333333;
+                                color: #eeeeee;
+                            }
+                            
+                            QTreeView {
+                                background-color: #555555;
+                                color: #eeeeee;
+                            }
+                            
+                            """)
+
+    def toggle_mode(self):
+        self.apply_styles()
 
     def calc_interest(self):
         initial_investment = None
@@ -85,6 +130,9 @@ class FinanceApp(QMainWindow):
         except ValueError:
             QMessageBox.warning(self, "Error", "Enter a number")
             return
+
+        self.model.clear()
+        self.model.setHorizontalHeaderLabels(["Year", "total"])
 
         total = initial_investment
         for year in range(1, num_years+1):
