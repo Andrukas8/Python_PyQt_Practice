@@ -1,5 +1,7 @@
 # User added
 *.db
+*.csv
+*.svg
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

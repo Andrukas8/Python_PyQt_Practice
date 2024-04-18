@@ -1,5 +1,7 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QTreeView, QLineEdit, QMainWindow, QMessageBox
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 
 class FinanceApp(QMainWindow):
@@ -28,7 +30,8 @@ class FinanceApp(QMainWindow):
         self.clear_button = QPushButton("Clear")
 
         # Figure
-        self.figure = QLabel("--- Chart will be here soon ---")
+        self.figure = plt.figure()
+        self.canvas = FigureCanvas(self.figure)
 
         # Design
         self.master_layout = QVBoxLayout()
@@ -52,7 +55,7 @@ class FinanceApp(QMainWindow):
         self.col1.addWidget(self.calc_button)
         self.col1.addWidget(self.clear_button)
 
-        self.col2.addWidget(self.figure)
+        self.col2.addWidget(self.canvas)
 
         self.row2.addLayout(self.col1, 30)
         self.row2.addLayout(self.col2, 70)
@@ -86,11 +89,26 @@ class FinanceApp(QMainWindow):
             item_total = QStandardItem("{:.2f}".format(total))
             self.model.appendRow([item_year, item_total])
 
+        # Update chart with data
+        self.figure.clear()
+        ax = self.figure.subplots()
+        years = list(range(1, num_years+1))
+        totals = [initial_investment * (1 + interest_rate/100)
+                  ** year for year in years]
+
+        ax.plot(years, totals)
+        ax.set_title("Interest Chart")
+        ax.set_xlabel("Year")
+        ax.set_ylabel("Total")
+        self.canvas.draw()
+
     def reset(self):
         self.rate_input.clear()
         self.initial_input.clear()
         self.years_input.clear()
         self.model.clear()
+        self.figure.clear()
+        self.canvas.draw()
 
 
 if __name__ == "__main__":
