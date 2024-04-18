@@ -1,7 +1,7 @@
 # All Imports
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QLineEdit, QComboBox, QDateEdit, QTableWidget, QVBoxLayout, QHBoxLayout, QMessageBox, QTableWidgetItem
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QLineEdit, QComboBox, QDateEdit, QTableWidget, QVBoxLayout, QHBoxLayout, QMessageBox, QTableWidgetItem, QHeaderView
 from PyQt5.QtSql import QSqlDatabase, QSqlQuery
-from PyQt5.QtCore import QDate
+from PyQt5.QtCore import QDate, Qt
 import sys
 
 
@@ -24,12 +24,50 @@ class ExpenseApp(QWidget):
 
         self.table = QTableWidget()
         self.table.setColumnCount(5)  # id, date, category, amount, description
+
         header_names = ["Id", "Date", "Category", "Amount", "Description"]
         self.table.setHorizontalHeaderLabels(header_names)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table.sortByColumn(1, Qt.DescendingOrder)
 
         # adding items to a dropdown list
         self.dropdown.addItems(
             ["Food", "Transportation", "Rent", "Shopping", "Entertainment", "Bills", "Other"])
+
+        self.setStyleSheet("""
+                           QWidget {background-color: #b8c9e1;}
+                           
+                           QLabel {
+                               color: #333;
+                               font-size: 14px;
+                           }
+                           
+                           QLineEdit, QComboBox, QDateEdit {
+                               background-color: #b8c9e1;
+                               color: #333;
+                               border: 1px solid #333;
+                               padding: 5px;
+                           }
+                           
+                           QTableWidget {
+                               background-color: #b8c9e1;
+                               color: #333;
+                               border: 1px solid #555;
+                               selection-background-color: #ddd;                               
+                           }
+                           
+                           QPushButton {
+                               background-color: #4caf50;
+                               color: #fff;
+                               border: none;
+                               padding: 8px 16px;
+                               font-size: 14px;
+                           }
+                           
+                           QPushButton:hover {
+                               background-color: #45a049;
+                           }
+                           """)
 
         # layouts
         self.master_layout = QVBoxLayout()
